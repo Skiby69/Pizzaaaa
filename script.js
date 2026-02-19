@@ -44,7 +44,7 @@ function calculateTotal(sizeId, sauceId, toppingIds) {
 }
 
 const sizeSelect = document.getElementById("sizes");
-const sauceSelect = document.getElementById("sauces");
+const sauceSelect = document.getElementById("sauceSelect");
 const toppingsContainer = document.getElementById("toppings");
 const sauceError = document.getElementById("sauce-error");
 const toppingsError = document.getElementById("toppings-error");
@@ -70,3 +70,5 @@ function loadPizzaOptions() {
         `;
     });
 }
+
+loadPizzaOptions();
