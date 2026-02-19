@@ -4,111 +4,192 @@ const pizzaData = {
     { id: 2, nev: "Közepes", meret: "M", ar: 800 },
     { id: 3, nev: "Nagy", meret: "L", ar: 1500 }
   ],
-
   basePrice: 2000,
-
   sauces: [
     { id: 1, nev: "Paradicsomos", ar: 300 },
     { id: 2, nev: "Tejfölös", ar: 400 }
   ],
-
   toppings: [
     { id: 1, nev: "Sajt", ar: 500 },
     { id: 2, nev: "Sonka", ar: 600 },
     { id: 3, nev: "Gomba", ar: 450 }
   ]
 };
-const cartItems = document.getElementById("cartItems");
-const sizeSelect = document.getElementById("sizes");
+
+let cart = [];
+
+const sizeSelect = document.getElementById("sizeSelect");
 const sauceSelect = document.getElementById("sauceSelect");
 const toppingsContainer = document.getElementById("toppings");
-const sauceError = document.getElementById("sauce-error");
-const toppingsError = document.getElementById("toppings-error");
 const totalPrice = document.getElementById("totalPrice");
 const priceDisplay = document.getElementById("priceDisplay");
 const quantityInput = document.getElementById("quantity");
+const cartItems = document.getElementById("cartItems");
+const osszegzes = document.getElementById("osszegzes");
 
-function calculateTotal() {
-    /*
-    cartItems.forEach(item => {
-        const sizeId = parseInt(item.querySelector('input[name="size"]:checked')?.value);
-        const sauceId = parseInt(item.querySelector('input[name="sauce"]:checked')?.value);
-        const toppingIds = Array.from(item.querySelectorAll('input[name="topping"]:checked')).map(t => parseInt(t.value));
-        let total = 0;
-        total = total + calculateSingle(sizeId, sauceId, toppingIds);
-        totalPrice.textContent = `Total: ${total} Ft`;
-    });*/
+
+// ====== Opciók betöltése ======
+function loadPizzaOptions() {
+
+  pizzaData.sizes.forEach(size => {
+    sizeSelect.innerHTML += `
+      <label>
+        <input type="radio" name="size" value="${size.id}" onchange="updatePriceDisplay()">
+        ${size.nev} - ${pizzaData.basePrice + size.ar} Ft
+      </label><br>
+    `;
+  });
+
+  pizzaData.sauces.forEach(sauce => {
+    sauceSelect.innerHTML += `
+      <label>
+        <input type="radio" name="sauce" value="${sauce.id}" onchange="updatePriceDisplay()">
+        ${sauce.nev} - ${sauce.ar} Ft
+      </label><br>
+    `;
+  });
+
+  pizzaData.toppings.forEach(topping => {
+    toppingsContainer.innerHTML += `
+      <label>
+        <input type="checkbox" name="topping" value="${topping.id}" onchange="updatePriceDisplay()">
+        ${topping.nev} - ${topping.ar} Ft
+      </label><br>
+    `;
+  });
 }
 
-function addToCart(sizeId, sauceId, toppingIds) {
-  const cartItems = document.getElementById("cartItems");
-  const total = calculateSingle(sizeId, sauceId, toppingIds)*quantityInput.value;
-  cartItems.innerHTML += `
-    <div class="cart-item">
-      <p>Size: ${pizzaData.sizes.find(s => s.id === sizeId)?.nev}</p>
-      <p>Sauce: ${pizzaData.sauces.find(s => s.id === sauceId)?.nev}</p>
-      <p>Toppings: ${toppingIds.map(id => pizzaData.toppings.find(t => t.id === id)?.nev).join(', ')}</p>
-      <p>Price: ${total} Ft</p>
-      <button class="remove-btn" onclick="this.parentElement.remove();calculateTotal()">Remove</button>
-    </div>
-  `;
-}
 
+// ====== Egy pizza ár számítása ======
 function calculateSingle(sizeId, sauceId, toppingIds) {
+
   let total = pizzaData.basePrice;
 
   const size = pizzaData.sizes.find(s => s.id === sizeId);
-  if (size) {
-    total += size.ar;
-  }
+  if (size) total += size.ar;
 
   const sauce = pizzaData.sauces.find(s => s.id === sauceId);
-  if (sauce) {
-    total += sauce.ar;
-  }
+  if (sauce) total += sauce.ar;
 
   toppingIds.forEach(id => {
     const topping = pizzaData.toppings.find(t => t.id === id);
-    if (topping) {
-      total += topping.ar;
-    }
+    if (topping) total += topping.ar;
   });
 
   return total;
 }
 
-function loadPizzaOptions() {
-    pizzaData.sizes.forEach(size => {
-        sizeSelect.innerHTML += `
-        <input type="radio" name="size" value="${size.id}" id="size-${size.id}" onchange="updatePriceDisplay()">
-        <label for="size-${size.id}">${size.nev} - ${2000+size.ar} Ft</label>
-        `;
-    });
 
-    pizzaData.sauces.forEach(sauce => {
-        sauceSelect.innerHTML += `
-        <input type="radio" name="sauce" value="${sauce.id}" id="sauce-${sauce.id}" onchange="updatePriceDisplay()">
-        <label for="sauce-${sauce.id}">${sauce.nev} - ${sauce.ar} Ft</label>
-        `;
-    });
-
-    pizzaData.toppings.forEach(topping => {
-        toppingsContainer.innerHTML += `
-        <label>
-        <input type="checkbox" name="topping-${topping.ar}" value="${topping.id}" onchange="updatePriceDisplay()">
-        ${topping.nev} - ${topping.ar} Ft
-        </label>
-        `;
-    });
-}
-
+// ====== Ár automatikus frissítés ======
 function updatePriceDisplay() {
-  const sizeId = parseInt(document.querySelector('input[name^="size"]:checked')?.value);
-  const sauceId = parseInt(document.querySelector('input[name^="sauce"]:checked')?.value);
-  const toppingIds = Array.from(document.querySelectorAll('input[name^="topping-"]:checked')).map(t => parseInt(t.value));
 
-  const total = calculateSingle(sizeId, sauceId, toppingIds)*quantityInput.value;
-  priceDisplay.textContent = `${total} Ft`;
+  const sizeId = parseInt(document.querySelector('input[name="size"]:checked')?.value);
+  const sauceId = parseInt(document.querySelector('input[name="sauce"]:checked')?.value);
+  const toppingIds = Array.from(document.querySelectorAll('input[name="topping"]:checked'))
+    .map(t => parseInt(t.value));
+
+  if (!sizeId || !sauceId) {
+    priceDisplay.textContent = "0";
+    return;
+  }
+
+  const total = calculateSingle(sizeId, sauceId, toppingIds) * quantityInput.value;
+  priceDisplay.textContent = total;
 }
+
+
+// ====== Kosárba helyezés ======
+function calculateTotal() {
+
+  const sizeId = parseInt(document.querySelector('input[name="size"]:checked')?.value);
+  const sauceId = parseInt(document.querySelector('input[name="sauce"]:checked')?.value);
+  const toppingIds = Array.from(document.querySelectorAll('input[name="topping"]:checked'))
+    .map(t => parseInt(t.value));
+
+  if (!sauceId) {
+    alert("Kötelező szószt választani!");
+    return;
+  }
+
+  const quantity = parseInt(quantityInput.value);
+  const singlePrice = calculateSingle(sizeId, sauceId, toppingIds);
+  const total = singlePrice * quantity;
+
+  const order = {
+    sizeId,
+    sauceId,
+    toppingIds,
+    quantity,
+    total
+  };
+
+  cart.push(order);
+
+  renderCart();
+}
+
+
+// ====== Kosár kirajzolás ======
+function renderCart() {
+
+  cartItems.innerHTML = "";
+  let sum = 0;
+
+  cart.forEach((item, index) => {
+
+    const size = pizzaData.sizes.find(s => s.id === item.sizeId);
+    const sauce = pizzaData.sauces.find(s => s.id === item.sauceId);
+    const toppings = item.toppingIds.map(id =>
+      pizzaData.toppings.find(t => t.id === id)?.nev
+    ).join(", ");
+
+    sum += item.total;
+
+    cartItems.innerHTML += `
+      <div class="cart-item">
+        <p>Méret: ${size?.nev}</p>
+        <p>Szósz: ${sauce?.nev}</p>
+        <p>Feltétek: ${toppings || "Nincs"}</p>
+        <p>Darab: ${item.quantity}</p>
+        <p>Ár: ${item.total} Ft</p>
+        <button onclick="removeItem(${index})">Törlés</button>
+        <hr>
+      </div>
+    `;
+  });
+
+  totalPrice.textContent = sum;
+}
+
+
+// ====== Törlés ======
+function removeItem(index) {
+  cart.splice(index, 1);
+  renderCart();
+}
+
+function placeOrder() {
+
+  if (cart.length === 0) {
+    alert("A kosár üres! Nem tudsz rendelést leadni.");
+    return;
+  }
+
+  const orderId = Math.floor(Math.random() * 100000);
+
+  osszegzes.innerHTML = `
+    <h2>✅ Rendelés sikeresen leadva!</h2>
+    <p>Rendelési azonosító: <strong>#${orderId}</strong></p>
+    <p>Fizetendő összeg: <strong>${totalPrice.textContent} Ft</strong></p>
+    <p>Köszönjük a rendelést! 🍕</p>
+  `;
+
+  // Kosár ürítése
+  cart = [];
+  cartItems.innerHTML = "";
+  totalPrice.textContent = "0";
+  priceDisplay.textContent = "0";
+}
+
 
 loadPizzaOptions();
