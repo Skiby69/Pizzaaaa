@@ -9,5 +9,65 @@
 </head>
 <body>
     
+
+
+<h1>Pizza rendelő rendszer</h1>
+
+<div class="box">
+    <h2>Méret választás</h2>
+    <div id="sizes">
+        <select id="sizeSelect">
+            <option value="kicsi">Kicsi</option>
+            <option value="közepes">Közepes</option>
+            <option value="nagy">Nagy</option>
+        </select>
+    </div>
+</div>
+
+<div class="box">
+    <h2>Szósz választás (1 kötelező)</h2>
+    <div id="sauces">
+        <select id="sauceSelect">
+            <option value="paradicsomos">Paradicsomos</option>
+            <option value="tejszínes">Tejszínes</option>
+            <option value="pesto">Pesto</option>
+        </select>
+    </div>
+</div>
+
+<div class="box">
+    <h2>Feltétek (több választható)</h2>
+    <div id="toppings">
+        <select id="toppingSelect">
+            <option value="none">none</option>
+            <option value="pepperoni">Pepperoni</option>
+            <option value="sonka">Sonka</option>
+            <option value="hagyma">Hagyma</option>
+        </select>
+        <select id="toppingSelect">
+            <option value="none">none</option>
+            <option value="pepperoni">Pepperoni</option>
+            <option value="sonka">Sonka</option>
+            <option value="hagyma">Hagyma</option>
+        </select>
+        <select id="toppingSelect">
+            <option value="none">none</option>
+            <option value="pepperoni">Pepperoni</option>
+            <option value="sonka">Sonka</option>
+            <option value="hagyma">Hagyma</option>
+        </select>
+    </div>
+</div>
+
+<div class="box">
+    <h2>Darabszám</h2>
+    <input type="number" id="quantity" value="1" min="1">
+</div>
+
+<button onclick="calculateTotal()">Rendelés</button>
+
+<h2>Végösszeg: <span id="totalPrice">0</span> Ft</h2>
+
+<div id="osszegzes"></div>
 </body>
 </html>
