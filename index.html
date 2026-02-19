@@ -38,11 +38,12 @@
 
 <div class="box">
     <h2>Darabszám</h2>
-    <input type="number" id="quantity" value="1" min="1">
+    <input type="number" id="quantity" value="1" min="1" onchange="updatePriceDisplay()">
 </div>
-
-<button onclick="calculateTotal()">Rendelés</button>
-
+<p>Ár: <span id="priceDisplay">0</span> Ft</p>
+<button onclick="calculateTotal()">Kosárba</button>
+<H1>Kosár</H1>
+<div id="cartItems"></div>
 <h2>Végösszeg: <span id="totalPrice">0</span> Ft</h2>
 
 <div id="osszegzes"></div>
